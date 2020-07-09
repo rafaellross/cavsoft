@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NumberFormat from 'react-number-format';
 import {
   Row,
   Col,
@@ -8,33 +9,47 @@ import {
   Table
 } from 'antd';
 
+function FormatedMoney(props) {
+  return (
+    <NumberFormat value={props.value} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} prefix={'$'} />
+  )
+}
+
 const { DirectoryTree } = Tree;
 const treeData = [
   {
     title: 'H-001',
     key: '0',
+    quantity: 1,
+
     children: [
       {
         title: 'Cold Water',
         key: '0-0',
         isLeaf: true,
+        quantity: 1,
         children: [
           {
             title: '20mm CLASS B HORIZ.',
             isLeaf: true,
             key: '0-0-0',
-            style: {display: 'none'}
+            style: {display: 'none'},
+            quantity: 50,
+            cost: <FormatedMoney value={30.83}/>,
+            total: <FormatedMoney value={50 * 30.83}/>
           }
         ]
       },
       {
         title: 'Hot Water',
         key: '0-1',
+        quantity: 1,
         isLeaf: true,
       },
       {
         title: 'Sewer',
         key: '0-2',
+        quantity: 1,
         isLeaf: true,
       },
     ],
@@ -42,6 +57,7 @@ const treeData = [
   {
     title: 'H-002',
     key: '1',
+    quantity: 1,
     children: [
       {
         title: 'Cold Water',
@@ -65,22 +81,11 @@ const treeData = [
   },
 ];
 
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  getCheckboxProps: record => ({
-    disabled: record.name === 'Disabled User',
-    // Column configuration not to be checked
-    name: record.name,
-  }),
-};
-
 
 function App() {
 
   const [selecteds, setSelecteds] = useState([])
-  const [selectedRow, setSelectedRow] = useState(null)
+  const [selectedRow, setSelectedRow] = useState([])
 
   const onSelect = (keys, event) => {
     console.log('Trigger Select', event.node.title);
@@ -92,6 +97,20 @@ function App() {
     console.log('Trigger Expand');
   };
 
+
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      setSelectedRow([...selectedRows, selectedRowKeys])
+    },
+    getCheckboxProps: record => ({
+      disabled: record.name === 'Disabled User',
+      // Column configuration not to be checked
+      name: record.name,
+    }),
+  };
+
+
   const columns = [
     {
       title: 'Title',
@@ -102,6 +121,16 @@ function App() {
       title: 'Quantity',
       dataIndex: 'quantity',
       key: 'quantity',
+    },
+    {
+      title: 'Cost',
+      dataIndex: 'cost',
+      key: 'cost',
+    },
+    {
+      title: 'Total',
+      dataIndex: 'total',
+      key: 'total',
     },
 
   ]
@@ -124,15 +153,15 @@ function App() {
           columns={columns}
           rowSelection={
             {
-              //selectedRowKeys: [selectedRow],
+              selectedRowKeys: selectedRow,
               type: "checkbox",
               ...rowSelection,
             }
           }
           onRow={(record, rowIndex) => {
             return {
-              onClick: event => console.log("onclick"), // click row
-              onDoubleClick: event => setSelectedRow(record.key), // double click row
+              onClick: event => setSelectedRow([record.key]), // click row
+              onDoubleClick: event => console.log("onDoubleClick"), // double click row
               onContextMenu: event => {}, // right button click row
               onMouseEnter: event => {}, // mouse enter row
               onMouseLeave: event => {}, // mouse leave row
