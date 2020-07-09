@@ -6,8 +6,13 @@ import {
   Tree,
   Typography,
   Divider,
-  Table
+  Table,
+  Button,
+  Modal,
+  Input
 } from 'antd';
+
+const style = { background: '#0092ff', padding: '8px 0' };
 
 function FormatedMoney(props) {
   return (
@@ -81,17 +86,64 @@ const treeData = [
   },
 ];
 
+function ModalAddNewFolder(props) {
+  const [inputValue, setInputValue] = useState("")
+
+  const handleChange = (e) => {
+    console.log(e.target.value)
+    setInputValue(e.target.value)
+  }
+
+  return (
+    <Modal
+    title="Add New Folder"
+    visible={props.open}
+    onOk={props.handleAdd}
+    onCancel={props.handleCancel}
+    footer={[
+      <Button key="cancel" onClick={props.handleCancel}>
+        Cancel
+      </Button>,
+      <Button key="add" type="primary" onClick={props.handleAdd} disabled={inputValue.trim().length >= 3 ? false : true}>
+        Add
+      </Button>,
+    ]}
+  >
+    <Input placeholder="Description" value={inputValue} onChange={(e) => handleChange(e)}/>
+    <Typography>Parent</Typography>
+    <DirectoryTree
+              multiple
+              defaultExpandAll
+              onSelect={props.onSelect}
+              onExpand={props.onExpand}
+              treeData={[{title: 'Estimating', key: '-', children: treeData}]}
+            />
+
+  </Modal>
+  )
+}
+
+
 
 function App() {
 
   const [selecteds, setSelecteds] = useState([])
   const [selectedRow, setSelectedRow] = useState([])
-
+  const [tableTitle, setTableTile] = useState(null)
+  const [openModalNewFolder, setOpenModalNewFolder] = useState(false)
   const onSelect = (keys, event) => {
     console.log('Trigger Select', event.node.title);
     setSelecteds(event.node.children)
-
+    setTableTile(event.node.title)
   };
+
+  const handleAddNewFolder = () => {
+    setOpenModalNewFolder(false)
+  }
+
+  const handleCancelNewFolder = () => {
+    setOpenModalNewFolder(false)
+  }
 
   const onExpand = () => {
     console.log('Trigger Expand');
@@ -136,21 +188,60 @@ function App() {
   ]
 
   return (
-
-    <Row>
-      <Col span={6}>
-        <DirectoryTree
-        multiple
-        defaultExpandAll
-        onSelect={onSelect}
-        onExpand={onExpand}
-        treeData={[{title: 'Estimating', key: '-', children: treeData}]}
+    <>
+    <ModalAddNewFolder
+      open={openModalNewFolder}
+      handleAdd={handleAddNewFolder}
+      handleCancel={handleCancelNewFolder}
       />
+    <Row>
+      <Col span={6} style={{backgroundColor: 'grey', height: '100vh'}}>
+      <Row>
+        <Col className="gutter-row" span={24}>
+          <DirectoryTree
+              multiple
+              style={{backgroundColor: 'grey', color: 'white', borderBottom: 1, height: '70vh', overflowY: 'scroll'}}
+              defaultExpandAll
+              onSelect={onSelect}
+              onExpand={onExpand}
+              treeData={[{title: 'Estimating', key: '-', children: treeData}]}
+            />
+        </Col>
+      </Row>
+      <Divider/>
+      <Row gutter={4} justify={'center'}>
+        <Col className="gutter-row" span={6}>
+          <Button type="primary" block onClick={() => setOpenModalNewFolder(true)}>Add</Button>
+        </Col>
+        <Col className="gutter-row" span={6}>
+          <Button type="primary" danger block>Delete</Button>
+        </Col>
+      </Row>
+
       </Col>
       <Col span={18}>
         <Table
           dataSource={selecteds}
           columns={columns}
+          title={
+
+            () => { return (tableTitle !== null &&
+                  <>
+                    <Typography>{tableTitle}</Typography>
+                    <Divider />
+                    <Row gutter={4}>
+                      <Col className="gutter-row" span={2}>
+                        <Button type="primary" block>Add</Button>
+                      </Col>
+                      <Col className="gutter-row" span={2}>
+                        <Button type="primary" danger block>Delete</Button>
+                      </Col>
+                    </Row>
+
+
+                  </>)
+                }
+          }
           rowSelection={
             {
               selectedRowKeys: selectedRow,
@@ -170,6 +261,7 @@ function App() {
           />
       </Col>
     </Row>
+    </>
 
   );
 }
