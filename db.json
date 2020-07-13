@@ -1,0 +1,64 @@
+{
+    {
+        "title": "H-001",
+        "key": "0",
+        "quantity": 1,
+
+        "children": [
+          {
+            "title": "Cold Water",
+            "key": "0-0",
+            "isLeaf": true,
+            "quantity": 1,
+            "children": [
+              {
+                "title": "20mm CLASS B HORIZ.",
+                "isLeaf": true,
+                "key": "0-0-0",
+                "style": "{display: 'none'}",
+                "quantity": 50,
+                "cost": <FormatedMoney value={30.83}/>,
+                "total": <FormatedMoney value={50 * 30.83}/>
+              }
+            ]
+          },
+          {
+            "title": "Hot Water",
+            "key": "0-1",
+            "quantity": 1,
+            "isLeaf": true,
+          },
+          {
+            "title": "Sewer",
+            "key": "0-2",
+            "quantity": 1,
+            "isLeaf": true,
+          },
+        ],
+      },
+      {
+        "title": "H-002",
+        "key": "1",
+        "quantity": 1,
+        "children:" [
+          {
+            "title": "Cold Water",
+            "key": "1-0",
+            "isLeaf": true,
+            "children": [
+              {
+                "title": "20mm CLASS B HORIZ.",
+                "isLeaf": true,
+                "key": "1-0-0",
+                "style": "{display: 'none'}"
+              }
+            ]
+          },
+          {
+            "title": "Hot Water",
+            "key": "1-1",
+            "isLeaf": true,
+          },
+        ],
+      },
+}
